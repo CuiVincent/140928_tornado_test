@@ -1,0 +1,9 @@
+<html>
+    <head><title>UI Module Example</title></head>
+    <body>
+        {% module Hello() %}
+        {% for book in books %}
+            {% module Book(book) %}
+        {% end %}
+    </body>
+</html>

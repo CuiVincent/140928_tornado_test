@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <head><title>Poem Maker Pro</title></head>
+    <body>
+        <h1>Your poem</h1>
+        <p>Two {{roads}} diverged in a {{wood}}, and I—<br>
+I took the one less travelled by,<br>
+And that has {{made}} all the {{difference}}.</p>
+
+        <ul>
+            {% for book in books %}
+                <li>{{ book }}</li>
+            {% end %}
+        </ul>
+         </br>
+         {{ escape("><&") }}
+         </br>
+         {{ url_escape("http://www.baidu.com/?name=崔") }}
+         </br>
+         {{ json_encode(books) }}
+         </br>
+         {{ squeeze("空格          空格")}}
+         </br>
+    </body>
+</html>
