@@ -30,7 +30,7 @@ class HelloHandler(tornado.web.RequestHandler):
                     "subtitle": "Building Smart Web 2.0 Applications",
                     "image":"/static/images/collective_intelligence.gif",
                     "author": "Toby Segaran",
-                    "date_added":1310248056,
+                    "date_added":131024805611,
                     "date_released": "August 2007",
                     "isbn":"978-0-596-52932-1",
                     "description":"<p>This fascinating book demonstrates how you "
