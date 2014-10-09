@@ -15,16 +15,16 @@ from tornado.options import define, options
 define("port", default=8000, help="run on the given port", type=int)
 
 class IndexHandler(tornado.web.RequestHandler):
+    @tornado.web.asynchronous #保持客户端连接，需要将连接保存到回调结束，否则连接将在get函数返回时关闭。用完一定要手动关闭self.finish()
+    @tornado.gen.engine #将提醒Tornado这个方法将使用tornado.gen.Task类
     def get(self):
         query = self.get_argument('a')
-        sleeping = self.get_argument('t')
-        client = tornado.httpclient.HTTPClient()
-        response = client.fetch("http://gc.ditu.aliyun.com/geocoding?" + \
+        client = tornado.httpclient.AsyncHTTPClient()
+        response = yield tornado.gen.Task(client.fetch ,"http://gc.ditu.aliyun.com/geocoding?" + \
                 urllib.parse.urlencode({"a": query, "ie": "utf-8", "inputT": 1103}))
         html = response.body
         html = html.decode('utf-8')
-        time.sleep(float(sleeping))
-        # body = json.loads(html)
+        # body = json.loads(response.body)
         # result_count = len(body['results'])
         # now = datetime.datetime.utcnow()
         # raw_oldest_tweet_at = body['results'][-1]['created_at']
@@ -37,8 +37,9 @@ class IndexHandler(tornado.web.RequestHandler):
 <div style="text-align: center">
     <div style="font-size: 72px">%s</div>
     <div style="font-size: 44px">%s</div>
-    <div style="font-size: 24px">http同步版本</div>
-</div>""" % (query, html))
+    <div style="font-size: 24px">http gen异步版本</div>
+</div>""" % (self.get_argument('a'), html))
+        self.finish() #关闭客户端连接
 
 if __name__ == "__main__":
     tornado.options.parse_command_line()
