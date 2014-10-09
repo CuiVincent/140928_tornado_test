@@ -38,7 +38,7 @@ class IndexHandler(tornado.web.RequestHandler):
 <div style="text-align: center">
     <div style="font-size: 72px">%s</div>
     <div style="font-size: 44px">%s</div>
-    <div style="font-size: 24px">同步版本</div>
+    <div style="font-size: 24px">http同步版本</div>
 </div>""" % (query, html))
 
 if __name__ == "__main__":
