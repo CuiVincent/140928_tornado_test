@@ -11,24 +11,16 @@ from tornado.options import define, options
 define("port", default=8000, help="run on the given port", type=int)
 
 class BaseHandler(tornado.web.RequestHandler):
-    def send_error(self, status_code=500, **kwargs):
-        reason = None
-        if 'exc_info' in kwargs:
-            exception = kwargs['exc_info'][1]
-            if isinstance(exception, tornado.web.HTTPError) and exception.reason:
-                reason = exception.reason
-        try:
-            if status_code == 404:
-                self.render('404.html')
-            elif status_code == 500:
-                self.render('500.html',reason=reason)
-            else:
-                self.set_status(status_code, reason=reason)
-                self.write_error(status_code, **kwargs)
-        except Exception:
-            app_log.error("Uncaught exception in write_error", exc_info=True)
-        if not self._finished:
-            self.finish()
+    def write_error(self, status_code, **kwargs):
+        print(kwargs)
+        if status_code == 404:
+            self.clear()
+            self.render('404.html')
+        elif status_code == 500:
+            self.clear()
+            self.render('500.html')
+        else:
+            super(BaseHandler, self).write_error(status_code, **kwargs)
 
 class IndexHandler(BaseHandler):
     def get(self):
@@ -36,15 +28,19 @@ class IndexHandler(BaseHandler):
         self.render('index.html')
 
 class PageNotFoundHandler(BaseHandler):
-    __err_code = 0
+    """Generates an error response with ``status_code`` for all requests."""
     def initialize(self, status_code):
-       self.__err_code = status_code
+        self.set_status(status_code)
+
+    def prepare(self):
+        raise  tornado.web.HTTPError(self._status_code)
 
     def check_xsrf_cookie(self):
+        # POSTs to an ErrorHandler don't actually have side effects,
+        # so we don't need to check the xsrf token.  This allows POSTs
+        # to the wrong url to return a 404 instead of 403.
         pass
 
-    def get(self):
-        raise tornado.web.HTTPError(self.__err_code)
 
 if __name__ == '__main__':
     tornado.web.ErrorHandler = PageNotFoundHandler
